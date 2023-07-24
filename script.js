@@ -1,5 +1,5 @@
 const botonesFoto = document.querySelectorAll('.btn-foto');
-const urlApi = 'http://ec2-3-134-12-80.us-east-2.compute.amazonaws.com:8080'
+const urlApi = 'http://ec2-3-134-12-80.us-east-2.compute.amazonaws.com'
 const estadoSaludable = document.getElementById('estadoSalud1');
 const estadoEnferma = document.getElementById('estadoSalud2');
 const selectSintomas = document.getElementById('sintoma');
