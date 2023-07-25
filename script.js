@@ -53,8 +53,9 @@ async function accionModalTomarFoto(botonClicado) {
     const constraints = {
       video: {
         facingMode: 'environment', // Intentar usar la cámara trasera (si está disponible)
-        width: { ideal: 340 }, // Ancho ideal del video
-        height: { ideal: 340 } // Altura ideal del video
+        width: { ideal: 1200},  // Ancho ideal del video
+        height: { ideal: 1200 }, // Altura ideal del video
+        focusMode: 'continuous'
       }
     };
 
