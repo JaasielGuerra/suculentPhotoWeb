@@ -49,7 +49,16 @@ async function accionModalTomarFoto(botonClicado) {
 
 
   try {
-    stream = await navigator.mediaDevices.getUserMedia({ video: true });
+
+    const constraints = {
+      video: {
+        facingMode: 'environment', // Intentar usar la cámara trasera (si está disponible)
+        width: { ideal: 340 }, // Ancho ideal del video
+        height: { ideal: 340 } // Altura ideal del video
+      }
+    };
+
+    stream = await navigator.mediaDevices.getUserMedia(constraints);
     videoElement.srcObject = stream;
 
     // Muestra el video y oculta la imagen y el canvas
@@ -70,9 +79,23 @@ async function accionModalTomarFoto(botonClicado) {
   loading.classList.add('d-none');
 }
 
+ // Ajustar el tamanio del canvas para mantener relacion de aspecto
+ function resizeCanvas() {
+
+  const aspectRatio = videoElement.videoWidth / videoElement.videoHeight;
+  const width = videoElement.offsetWidth;
+  const height = width / aspectRatio;
+
+  canvasElement.width = width;
+  canvasElement.height = height;
+}
+
+
 
 // Función para tomar la foto y mostrarla en el elemento <img>
 function takePhoto() {
+
+  resizeCanvas();
 
   // Dibuja el video en el canvas
   canvasElement.getContext('2d').drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
