@@ -33,6 +33,28 @@ modalFoto.addEventListener('hidden.bs.modal', event => {
   stopCamera();
 })
 
+//evento estado de salud
+estadoSaludable.addEventListener('change', e => alternarEstadoSalud(e.target))
+estadoEnferma.addEventListener('change', e => alternarEstadoSalud(e.target))
+
+function alternarEstadoSalud(radio) {
+  console.log(radio.value);
+
+  if (radio.value === 'SALUDABLE') {
+    
+    selectSintomas.hidden = true
+    consejo.hidden = true
+    document.getElementById('label-consejo').hidden = true
+
+  } else {
+
+    selectSintomas.hidden = false
+    consejo.hidden = false
+    document.getElementById('label-consejo').hidden = false
+  }
+
+}
+
 
 //evento submit formulario
 formulario.addEventListener('submit', e => enviarFormularioServicio(e));
