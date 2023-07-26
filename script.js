@@ -255,7 +255,7 @@ function cambiarIdSintoma(formData) {
 
   if (estadoSalud === 'SALUDABLE') {
 
-    formData.set('idSintoma', 'ESTADO_SALUDABLE');
+    formData.set('idSintoma', 'SALUDABLE');
 
   }
 }
