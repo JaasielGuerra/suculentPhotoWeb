@@ -8,12 +8,23 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"
+        integrity="sha512-cyzxRvewl+FOKTtpBzYjW6x6IAYUCZy3sGP40hn+DQkqeluGRCax7qztK2ImL64SA+C7kVWdLI6wvdlStawhyw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         #video {
             max-width: 100%;
             max-height: 100%;
             display: block;
             margin: auto;
+        }
+
+        /* Ensure the size of the image fit the container perfectly */
+        #image {
+            display: block;
+
+            /* This rule is very important, please don't ignore this */
+            max-width: 100%;
         }
     </style>
 </head>
@@ -41,6 +52,29 @@
                 <form id="form-fotos">
 
                     <div class="row g-3">
+
+                        <div class="col-6">
+                            <div class="form-check">
+                                <input class="form-check-input" value="FOTO" type="radio" name="tipoImagen" id="foto">
+                                <label class="form-check-label" for="foto">
+                                    FOTO
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="form-check">
+                                <input class="form-check-input" value="ARCHIVO" type="radio" name="tipoImagen"
+                                    id="archivo">
+                                <label class="form-check-label" for="archivo">
+                                    ARCHIVO
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3" id="pnl-tomar-fotos">
+
                         <div class="col-4">
                             <div class="d-grid">
                                 <button class="btn btn-warning btn-lg btn-foto" type="button" data-bs-toggle="modal"
@@ -88,6 +122,60 @@
                                         class="fa-solid fa-image"></i></button>
                             </div>
                         </div>
+                    </div>
+
+                    <div class="row g-3" id="pnl-subir-archivo">
+
+                        <div class="col-4">
+                            <div class="d-grid">
+                                <button class="btn btn-warning btn-lg btn-cargar-foto" type="button"
+                                    data-bs-toggle="modal" data-bs-target="#modalCargarImagen" id="btn-cargar-1">Cargar
+                                    1 <i class="fa-solid fa-image"></i></button>
+                            </div>
+                        </div>
+
+                        <div class="col-4">
+                            <div class="d-grid">
+                                <button class="btn btn-warning btn-lg btn-cargar-foto" type="button"
+                                    data-bs-toggle="modal" data-bs-target="#modalCargarImagen" id="btn-cargar-2">Cargar
+                                    2 <i class="fa-solid fa-image"></i></button>
+                            </div>
+                        </div>
+
+                        <div class="col-4">
+                            <div class="d-grid">
+                                <button class="btn btn-warning btn-lg btn-cargar-foto" type="button"
+                                    data-bs-toggle="modal" data-bs-target="#modalCargarImagen" id="btn-cargar-3">Cargar
+                                    3 <i class="fa-solid fa-image"></i></button>
+                            </div>
+                        </div>
+
+                        <div class="col-4">
+                            <div class="d-grid">
+                                <button class="btn btn-warning btn-lg btn-cargar-foto" type="button"
+                                    data-bs-toggle="modal" data-bs-target="#modalCargarImagen" id="btn-cargar-4">Cargar
+                                    4 <i class="fa-solid fa-image"></i></button>
+                            </div>
+                        </div>
+
+                        <div class="col-4">
+                            <div class="d-grid">
+                                <button class="btn btn-warning btn-lg btn-cargar-foto" type="button"
+                                    data-bs-toggle="modal" data-bs-target="#modalCargarImagen" id="btn-cargar-5">Cargar
+                                    5 <i class="fa-solid fa-image"></i></button>
+                            </div>
+                        </div>
+
+                        <div class="col-4">
+                            <div class="d-grid">
+                                <button class="btn btn-warning btn-lg btn-cargar-foto" type="button"
+                                    data-bs-toggle="modal" data-bs-target="#modalCargarImagen" id="btn-cargar-6">Cargar
+                                    6 <i class="fa-solid fa-image"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
 
                         <div class="col-6">
                             <div class="form-check">
@@ -171,11 +259,42 @@
 
     </div>
 
+    <!-- Modal -->
+    <div class="modal fade" id="modalCargarImagen" tabindex="-1" aria-labelledby="modalCargarImagenLabel"
+        aria-hidden="true">
+        <div class="modal-dialog m-0">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="modalCargarImagenLabel">Cargar foto</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body p-0">
+
+                    <input class="form-control form-control-sm" type="file" id="inputImage" accept="image/*">
+                    <div>
+                        <img id="image" src="" alt="Imagen">
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" id="cropButton" data-bs-dismiss="modal">Aceptar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
         crossorigin="anonymous"></script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"
+        integrity="sha512-6lplKUSl86rUVprDIjiW8DuOniNX8UDoRATqZSds/7t6zCQZfaCe3e5zcGaQwxa8Kpn5RTM9Fvl3X2lLV4grPQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="./script.js"></script>
 </body>
 

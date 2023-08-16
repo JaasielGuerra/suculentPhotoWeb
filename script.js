@@ -1,10 +1,14 @@
 const botonesFoto = document.querySelectorAll('.btn-foto');
+const botonesCargarFoto = document.querySelectorAll('.btn-cargar-foto');
+//const urlApi = 'http://localhost:8080'
 const urlApi = 'https://routersuculentapi-production.up.railway.app'
 const estadoSaludable = document.getElementById('estadoSalud1');
 const estadoEnferma = document.getElementById('estadoSalud2');
 const selectSintomas = document.getElementById('sintoma');
 const consejo = document.getElementById('consejo');
 const formulario = document.getElementById('form-fotos');
+const tipoFoto = document.getElementById('foto');
+const tipoArchivo = document.getElementById('archivo');
 
 const botonCapturarFoto = document.getElementById('capture-btn');
 let stream; // Variable para almacenar el flujo de la cámara
@@ -14,15 +18,53 @@ const photoElement = document.getElementById('photo');
 const botonAceptarCapturaFoto = document.getElementById('btn-aceptar-foto');
 const modalFoto = document.getElementById('modalFoto')
 
+const inputImage = document.getElementById('inputImage');
+const image = document.getElementById('image');
+const cropButton = document.getElementById('cropButton');
+
+//para recortar imagenes subidas
+let cropper;
+
 // fotos tomadas
 let fotosTomadas = {};
 let idBotonActualTomarFoto = '';
 
+//evento seleccion tipo imagen
+tipoFoto.addEventListener('change', e => alternarTipoImagenCapturar(e.target))
+tipoArchivo.addEventListener('change', e => alternarTipoImagenCapturar(e.target))
+
+function alternarTipoImagenCapturar(radio) {
+
+  console.log(radio.value);
+
+  resetCapturaFotos();
+
+  if (radio.value === 'ARCHIVO') {
+
+    document.getElementById('pnl-tomar-fotos').hidden = true;
+    document.getElementById('pnl-subir-archivo').hidden = false;
+
+  } else {
+    document.getElementById('pnl-tomar-fotos').hidden = false;
+    document.getElementById('pnl-subir-archivo').hidden = true;
+  }
+}
 
 // agregar eventos a los botones de tomar fotos
 botonesFoto.forEach(boton => {
   boton.addEventListener('click', e => accionModalTomarFoto(boton))
 });
+
+// agregar eventos a los botones de cargar fotos desde archivo
+botonesCargarFoto.forEach(boton => {
+  boton.addEventListener('click', e => accionLevantarModalCargarFoto(boton))
+});
+
+// evento para la carga de archivo imagen
+inputImage.addEventListener('change', cargarImagenParaRecorte);
+
+//evento para recortar imagen
+cropButton.addEventListener('click', recortarImagenPlanta);
 
 //eventos para captura foto y aceptar captura modal
 botonCapturarFoto.addEventListener('click', e => takePhoto());
@@ -41,7 +83,7 @@ function alternarEstadoSalud(radio) {
   console.log(radio.value);
 
   if (radio.value === 'SALUDABLE') {
-    
+
     selectSintomas.hidden = true
     consejo.hidden = true
     document.getElementById('label-consejo').hidden = true
@@ -75,7 +117,7 @@ async function accionModalTomarFoto(botonClicado) {
     const constraints = {
       video: {
         facingMode: 'environment', // Intentar usar la cámara trasera (si está disponible)
-        width: { ideal: 1200},  // Ancho ideal del video
+        width: { ideal: 1200 },  // Ancho ideal del video
         height: { ideal: 1200 }, // Altura ideal del video
         focusMode: 'continuous'
       }
@@ -93,17 +135,81 @@ async function accionModalTomarFoto(botonClicado) {
     botonCapturarFoto.style.display = 'block';
     botonAceptarCapturaFoto.style.display = 'none';
 
-    
+
   } catch (err) {
     console.error('Error al acceder a la cámara:', err);
     alert('Error al acceder a la cámara ' + err);
   }
-  
+
   loading.classList.add('d-none');
 }
 
- // Ajustar el tamanio del canvas para mantener relacion de aspecto
- function resizeCanvas() {
+function accionLevantarModalCargarFoto(botonClicado) {
+
+  console.log('Subir foto boton ' + botonClicado.getAttribute('id'));
+  idBotonActualTomarFoto = botonClicado.getAttribute('id');
+
+  image.hidden = true;
+  inputImage.hidden = false;
+
+  if (cropper) {
+    cropper.destroy(); // Destroy the Cropper instance
+    cropper = null;
+  }
+  image.src = ''; // Clear the image source
+  inputImage.value = ''; // Clear the input file selection
+
+}
+
+function cargarImagenParaRecorte(event) {
+  const file = event.target.files[0];
+  if (file) {
+
+    const reader = new FileReader();
+
+    reader.onload = function (e) {
+
+      image.src = e.target.result;
+      image.hidden = false;
+      inputImage.hidden = true;
+
+      // Initialize Cropper.js once the image is loaded
+      image.onload = function () {
+
+        cropper = new Cropper(image, {
+          aspectRatio: 1, // Square aspect ratio
+          minCropBoxWidth: 300,
+          minCropBoxHeight: 300
+        });
+
+      };
+    };
+
+    reader.readAsDataURL(file);
+  }
+}
+
+function recortarImagenPlanta() {
+
+  // Get the cropped image as a Blob
+  const croppedImageBlob = cropper.getCroppedCanvas({
+    with: 400,
+    height: 400
+  }).toBlob(function (imageBlob) {
+
+    // aqui se tiene el objeto Blob de la imagen capturada
+    // se agrega al arreglo de fotos
+    fotosTomadas[idBotonActualTomarFoto] = imageBlob;
+    console.log(fotosTomadas);
+
+    cambiarColorBotonFotoTomada();
+
+
+  });
+}
+
+// Ajustar el tamanio del canvas para mantener relacion de aspecto
+function resizeCanvas() {
 
   const aspectRatio = videoElement.videoWidth / videoElement.videoHeight;
   const width = videoElement.offsetWidth;
@@ -223,13 +329,13 @@ function cargarSelectConSintomas(data) {
 
 function resetForm() {
 
-  fotosTomadas = {};
-  idBotonActualTomarFoto = '';
-  botonesFoto.forEach(btn => {
-    btn.classList.remove('btn-success');
-    btn.classList.add('btn-warning');
-  });
+  resetCapturaFotos();
 
+  tipoFoto.checked = true;
+  document.getElementById('pnl-tomar-fotos').hidden = false;
+  document.getElementById('pnl-subir-archivo').hidden = true;
+  image.hidden = true;
+  inputImage.hidden = false;
   estadoEnferma.checked = true;
   selectSintomas.selectedIndex = 0;
   consejo.value = '';
@@ -241,6 +347,21 @@ function resetForm() {
   contenMain.classList.remove('d-none');
 
 
+}
+
+function resetCapturaFotos() {
+
+  fotosTomadas = {};
+  idBotonActualTomarFoto = '';
+  botonesFoto.forEach(btn => {
+    btn.classList.remove('btn-success');
+    btn.classList.add('btn-warning');
+  });
+
+  botonesCargarFoto.forEach(btn => {
+    btn.classList.remove('btn-success');
+    btn.classList.add('btn-warning');
+  });
 }
 
 function enviarFormularioServicio(event) {
