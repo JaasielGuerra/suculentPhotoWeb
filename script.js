@@ -178,8 +178,8 @@ function cargarImagenParaRecorte(event) {
 
         cropper = new Cropper(image, {
           aspectRatio: 1, // Square aspect ratio
-          minCropBoxWidth: 300,
-          minCropBoxHeight: 300
+          minCropBoxWidth: 200,
+          minCropBoxHeight: 200
         });
 
       };
