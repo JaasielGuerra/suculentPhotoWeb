@@ -28,6 +28,7 @@ let cropper;
 // fotos tomadas
 let fotosTomadas = {};
 let idBotonActualTomarFoto = '';
+let contadorFotos = 0;
 
 //evento seleccion tipo imagen
 tipoFoto.addEventListener('change', e => alternarTipoImagenCapturar(e.target))
@@ -110,7 +111,9 @@ async function accionModalTomarFoto(botonClicado) {
   console.log('Tomar foto boton ' + botonClicado.getAttribute('id'));
   idBotonActualTomarFoto = botonClicado.getAttribute('id');
 
-
+  contadorFotos = 1;
+  botonCapturarFoto.innerText = 'Capturar Foto (No. ' + contadorFotos + ')';
+  fotosTomadas = {};
 
   try {
 
@@ -235,23 +238,15 @@ function takePhoto() {
   // Convierte el contenido del canvas a un Blob en formato JPG
   canvasElement.toBlob(function (blob) {
 
-    // Establece la imagen capturada como la fuente de la imagen
-    const imageUrl = URL.createObjectURL(blob);
-    photoElement.src = imageUrl;
+      fotosTomadas[contadorFotos++] = blob;
+      console.log(fotosTomadas);
+      botonCapturarFoto.innerText = 'Capturar Foto (No. ' + contadorFotos + ')';
 
   }, 'image/jpeg', 1); // Calidad JPG de 100%
 
-  // Muestra la imagen y oculta el video y el canvas
-  videoElement.style.display = 'none';
-  canvasElement.style.display = 'none';
-  photoElement.style.display = 'block';
-
-  //ocultar boton capturar foto y mostrar el de aceptar
-  botonCapturarFoto.style.display = 'none';
-  botonAceptarCapturaFoto.style.display = 'block';
-
-  // Detener la cámara y liberar recursos
-  stopCamera();
+   
+    //mostrar el de aceptar
+    botonAceptarCapturaFoto.style.display = 'block'; 
 
 }
 
@@ -266,24 +261,8 @@ function stopCamera() {
 
 function aceptarCapturaFotoModal() {
 
-  const imageUrl = photoElement.src;
-
-  fetch(imageUrl)
-    .then(response => response.blob())
-    .then(imageBlob => {
-
-      // aqui se tiene el objeto Blob de la imagen capturada
-      // se agrega al arreglo de fotos
-      fotosTomadas[idBotonActualTomarFoto] = imageBlob;
-      console.log(fotosTomadas);
-
-      cambiarColorBotonFotoTomada();
-
-
-    })
-    .catch(error => {
-      console.error('Error al obtener la imagen:', error);
-    });
+  // Detener la cámara y liberar recursos
+  stopCamera();
 
 }
 
@@ -353,6 +332,7 @@ function resetCapturaFotos() {
 
   fotosTomadas = {};
   idBotonActualTomarFoto = '';
+  contadorFotos = 0;
   botonesFoto.forEach(btn => {
     btn.classList.remove('btn-success');
     btn.classList.add('btn-warning');
